@@ -44,4 +44,10 @@ public class LoginPage {
     public void clickSignupButton() {
         driver.findElement(By.xpath("//button[@data-qa='signup-button']")).click();
     }
+
+    public void enterLoginEmail(String mail) {
+    }
+
+    public void enterLoginPassword(String s) {
+    }
 }

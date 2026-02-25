@@ -3,11 +3,12 @@ package tests;
 import base.BaseClass;
 import pages.LoginPage;
 import pages.AccountCreationPage;
-import pages.HomePage;
 import utilities.RandomUtils;
-import org.openqa.selenium.By;
-import org.testng.Assert;
+import utilities.PercyUtils;
+
 import org.testng.annotations.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class LoginTest extends BaseClass {
 
@@ -18,44 +19,44 @@ public class LoginTest extends BaseClass {
 
         loginPage.clickSignupLogin();
 
-        String randomEmail = RandomUtils.generateRandomEmail();
-        String password = "Test@123";
+        String email = RandomUtils.generateRandomEmail();
+        String mobile = RandomUtils.generateRandomNumber();
 
-        // ---------- SIGNUP ----------
+        // Signup
         loginPage.enterSignupName("Adarsh");
-        loginPage.enterSignupEmail(randomEmail);
+        loginPage.enterSignupEmail(email);
         loginPage.clickSignupButton();
 
-        AccountCreationPage accountPage =
-                new AccountCreationPage(driver);
+        AccountCreationPage accountPage = new AccountCreationPage(driver);
 
-        accountPage.fillAccountDetails(password);
+        accountPage.fillAccountDetails("Test@123");
 
         accountPage.fillAddressDetails(
                 "Adarsh",
                 "Tiwari",
-                "Lucknow",
-                "UP",
+                "Lucknow Address",
+                "Uttar Pradesh",
                 "Lucknow",
                 "226001",
-                RandomUtils.generateRandomNumber()
+                mobile
         );
 
         accountPage.clickCreateAccount();
 
-        // Click Continue
-        driver.findElement(
-                By.xpath("//a[@data-qa='continue-button']")
-        ).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//b[contains(text(),'Account Created!')]")));
 
-        // ---------- VALIDATION ----------
-        HomePage homePage = new HomePage(driver);
+        // Continue after account creation
+        driver.findElement(By.xpath("//a[contains(text(),'Continue')]")).click();
 
-        Assert.assertTrue(
-                homePage.isLoggedIn(),
-                "Signup/Login Failed"
-        );
+        // Now verify logged in
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//a[contains(text(),'Logged in as')]")));
 
-        System.out.println("Signup + Login Successful: " + randomEmail);
+        // Percy Snapshot
+        PercyUtils percy = new PercyUtils(driver);
+        percy.takeSnapshot("User Logged In Successfully");
+
+        System.out.println("Signup + Login Successful: " + email);
     }
 }
